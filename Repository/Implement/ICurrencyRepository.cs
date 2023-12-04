@@ -29,9 +29,13 @@ namespace DapperApp.Repository.Implement
             }
         }
 
-        public Task DeleteCurrency(int id)
+        public async Task DeleteCurrency(int id)
         {
-            throw new NotImplementedException();
+            using (var cnn = context.CeateConnection())
+            {
+                string query = "delete from \"Currencies\" where \"Currencies\".\"CurrencyId\" =  @id ";
+                await cnn.ExecuteAsync(query, new { id });
+            }
         }
 
         public async Task<IEnumerable<Currencies>> GetAll()

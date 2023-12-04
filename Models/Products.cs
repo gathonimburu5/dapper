@@ -8,16 +8,14 @@ namespace DapperApp.Models
         public string ProName { get; set; }
         public string ProCode { get; set; }
         public string ProDescription { get; set; }
-        public int Qtry { get; set; }
-        public decimal BuyPrice { get; set; }
-        public decimal SellPrice { get; set; }
+        public int Qty { get; set; }
+        public decimal BuyingPrice { get; set; }
+        public decimal SellingPrice { get; set; }
         public int ReorderLevel { get; set; }
-        [ForeignKey("Category")]
         public int CategoryId { get; set; }
-        public virtual Categories? Category { get; set; }
-        [ForeignKey("MeasureUnit")]
+        public string? CategoryName { get; set; }
         public int UnitId { get; set; }
-        public virtual Units? MeasureUnit { get; set; }
+        public string? UnitName { get; set; }
     }
 
     public class Units

@@ -39,11 +39,23 @@ namespace DapperApp.Repository.Implement
 
         public async Task CreateProduct(Products products)
         {
-            string query = "INSERT INTO \"Products\"(\"ProName\", \"ProCode\", \"ProDescription\", \"Qty\", \"BuyingPrice\", \"SellingPrice\", \"ReorderLevel\", \"CategoryId\", \"UnitId\")    " +
-                "VALUES (@ProName, @ProCode, @ProDescription, @Qty, @BuyingPrice, @SellingPrice, @ReorderLevel, @CategoryId, @UnitId); ";
             using (var cnn = context.CeateConnection())
             {
-                await cnn.ExecuteAsync(query, products);
+                cnn.Open();
+                using (var trans = cnn.BeginTransaction())
+                {
+                    try
+                    {
+                        string query = "INSERT INTO public.\"Products\"(\"ProName\", \"ProCode\", \"ProDescription\", \"Qty\", \"BuyingPrice\", \"SellingPrice\", \"ReorderLevel\", \"CategoryId\", \"UnitId\") VALUES (@proName, @proCode, @proDescription, @qty, @buyingPrice, @sellingPrice, @reorderLevel, @categoryId, @unitId); ";
+                        await cnn.ExecuteAsync(query, products);
+                        trans.Commit();
+                    }
+                    catch (Exception e)
+                    {
+                        trans.Rollback();
+                    }
+                }
+                cnn.Close();
             }
         }
 
@@ -88,10 +100,8 @@ namespace DapperApp.Repository.Implement
         {
             using (var cnn = context.CeateConnection())
             {
-                var query = "SELECT a.\"ProductId\", a.\"ProName\", a.\"ProCode\", a.\"ProDescription\", a.\"Qty\", a.\"BuyingPrice\", a.\"SellingPrice\",    " +
-                    "a.\"ReorderLevel\", b.\"CategoryName\", c.\"UnitName\"    " +
-                    "FROM \"Products\" a left join \"Categories\" b on b.\"CategoryId\" = a.\"CategoryId\"    " +
-                    "left join \"Units\" c on c.\"UnitId\" = c.\"UnitId\" ORDER BY a.\"ProductId\" ASC;   ";
+                var query = "SELECT a.*, b.\"CategoryName\", c.\"UnitName\"   " +
+                    "FROM \"Products\" a left join \"Categories\" b on b.\"CategoryId\" = a.\"CategoryId\" left join \"Units\" c on c.\"UnitId\" = a.\"UnitId\" ORDER BY a.\"ProductId\" ASC;   ";
                 var product = await cnn.QueryAsync<Products>(query);
                 return product.ToList();
             }
@@ -121,10 +131,9 @@ namespace DapperApp.Repository.Implement
         {
             using (var cnn = context.CeateConnection())
             {
-                var query = "SELECT a.\"ProductId\", a.\"ProName\", a.\"ProCode\", a.\"ProDescription\", a.\"Qty\", a.\"BuyingPrice\", a.\"SellingPrice\", " +
-                    "a.\"ReorderLevel\", b.\"CategoryName\", c.\"UnitName\"              " +
+                var query = "SELECT a.*, b.\"CategoryName\", c.\"UnitName\"     " +
                     "FROM \"Products\" a left join \"Categories\" b on b.\"CategoryId\" = a.\"CategoryId\"                   " +
-                    "left join \"Units\" c on c.\"UnitId\" = c.\"UnitId\" WHERE a.\"ProductId\" = @id ;";
+                    "left join \"Units\" c on c.\"UnitId\" = a.\"UnitId\" WHERE a.\"ProductId\" = @id ;";
                 var result = await cnn.QueryFirstOrDefaultAsync<Products>(query, new { id });
                 return result;
             }
@@ -163,7 +172,7 @@ namespace DapperApp.Repository.Implement
             using (var cnn = context.CeateConnection())
             {
                 var query = "UPDATE \"Products\" SET \"ProName\"='"+poduct.ProName+"', \"ProCode\"='"+poduct.ProCode+"', \"ProDescription\"='"+poduct.ProDescription+"',  " +
-                    " \"Qty\"='"+poduct.Qtry+"', \"BuyingPrice\"='"+poduct.BuyPrice+"', \"SellingPrice\"='"+poduct.SellPrice+"', \"ReorderLevel\"='"+poduct.ReorderLevel+"',  " +
+                    " \"Qty\"='"+poduct.Qty+"', \"BuyingPrice\"='"+poduct.BuyingPrice+"', \"SellingPrice\"='"+poduct.SellingPrice+"', \"ReorderLevel\"='"+poduct.ReorderLevel+"',  " +
                     " \"CategoryId\"='"+poduct.CategoryId+"', \"UnitId\"='"+poduct.UnitId+"' WHERE \"ProductId\"= '"+poduct.ProductId+"'; ";
                 await cnn.ExecuteAsync(query, poduct);
             }

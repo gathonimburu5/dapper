@@ -20,7 +20,10 @@ namespace DapperApp.Controllers
         public async Task<IActionResult> Get()
         {
             logger.LogInformation("Class:CustomerController | Method:Get | Start method | Params {0}", "test");
+            Status status = new Status();
             var customer = await customerRepository.GetAll();
+            status.Code = 200;
+            status.Message = "Successfully";
             logger.LogInformation("Class:CustomerController | Method:Get | Start method | Params {0}", customer.ToString() );
             return Ok(customer);
         }
@@ -39,7 +42,7 @@ namespace DapperApp.Controllers
             Status status = new Status();
             if (!ModelState.IsValid)
             {
-                status.Code = 0;
+                status.Code = 400;
                 status.Message = "All Fields are Required!!";
                 logger.LogInformation("Class:CustomerController | Method:CreateCustomers | Stat Method | Paams {0}", status.Message);
                 return Ok(status);
@@ -47,21 +50,21 @@ namespace DapperApp.Controllers
             var customer = customerRepository.AddCustomer(model);
             if(customer != null)
             {
-                status.Code = 1;
+                status.Code = 200;
                 status.Message = "Successfully Created Customers.";
                 logger.LogInformation("Class:CustomerController | Method:CreateCustomers | Stat Method | Paams {0}", status.Message);
                 return Ok(status);
             }
             else
             {
-                status.Code = 0;
+                status.Code = 400;
                 status.Message = "Failed to Create Customers!!!";
                 logger.LogInformation("Class:CustomerController | Method:CreateCustomers | Stat Method | Paams {0}", status.Message);
                 return Ok(status);
             }
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateCustomers([FromBody] Customers model, int id)
+        public async Task<IActionResult> UpdateCustomers([FromBody]Customers model, int id)
         {
             logger.LogInformation("Class:CustomerController | Method:UpdateCustomers | Stat Method | Paams {0}", model.ToString());
             Status status = new Status();

@@ -93,5 +93,25 @@ namespace DapperApp.Controllers
             }
             return Ok(status);
         }
+        [HttpDelete]
+        public IActionResult DeleteCurrency(int id)
+        {
+            Status status = new Status();
+            var currency = currencyRepository.DeleteCurrency(id);
+            if (currency != null)
+            {
+                status.Code = 200;
+                status.Message = "Successfully Deleted Currency";
+                logger.LogInformation("Class:CurrencyController | Method:DeleteCurrency | Start method | Params {0}", status.Message);
+                return Ok(status);
+            }
+            else
+            {
+                status.Code = 400;
+                status.Message = "Failed to Delete Currency!!!";
+                logger.LogInformation("Class:CurrencyController | Method:DeleteCurrency | Start method | Params {0}", status.Message);
+                return Ok(status);
+            }
+        }
     }
 }

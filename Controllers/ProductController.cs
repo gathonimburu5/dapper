@@ -34,7 +34,7 @@ namespace DapperApp.Controllers
             return Ok(product);
         }
         [HttpPost]
-        public IActionResult CreateProducts([FromBody] Products product)
+        public IActionResult CreateProducts([FromBody]Products product)
         {
             logger.LogInformation("Class:ProductController | Method:CreateProducts | Start method | Params {0}", product.ToString());
             Status status = new Status();
@@ -62,7 +62,7 @@ namespace DapperApp.Controllers
             }
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateProduct([FromBody] Products model, int id)
+        public async Task<IActionResult> UpdateProduct([FromBody]Products model, int id)
         {
             logger.LogInformation("Class:ProductController | Method:UpdateProduct | Start method | Params {0}", "test");
             Status status = new Status();
